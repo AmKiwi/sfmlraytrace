@@ -1,0 +1,1 @@
+g++ -std=c++17 main.cpp     -DSFML_STATIC     -I$HOME/libs/SFML-3.0.2/include     -L$HOME/libs/SFML-3.0.2/lib     -o app     -lsfml-graphics-s -lsfml-window-s -lsfml-system-s     -lX11 -lXrandr -lXi -lXcursor -lGL -ludev -lpthread -ldl -lm
