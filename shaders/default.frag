@@ -3,6 +3,7 @@ uniform sampler2D texture;
 uniform vec2 resolution;
 uniform vec3 cameraPos;
 uniform float time;
+uniform mat3 cameraRotation;
 
 int recursionLimit = 8;
 struct ray
@@ -77,7 +78,7 @@ void main()
     //vec2 uv = gl_FragCoord.xy/resolution; square aspect ratio
     vec2 uv = gl_FragCoord.xy/resolution.y;
     vec3 viewport = vec3((uv.x-resolution.x/resolution.y/2.)*viewportScale,(uv.y-0.5)*viewportScale,-focalLength);
-    ray viewRay = ray(cameraPos,normalize(viewport));
+    ray viewRay = ray(cameraPos,normalize(viewport*cameraRotation));
     //gl_FragColor = vec4(uv,0.,1.);
     gl_FragColor=vec4(rayColour(viewRay),1.);
 }
