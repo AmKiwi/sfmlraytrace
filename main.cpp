@@ -90,16 +90,17 @@ int main()
         ));*/
       }
       if (const auto* mouseMovedRaw = event->getIf<sf::Event::MouseMovedRaw>()) {
-        rot += sf::Vector2f(-mouseMovedRaw->delta.x/500.,-mouseMovedRaw->delta.y*0.);
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+          rot += sf::Vector2f(mouseMovedRaw->delta.x/-500.,mouseMovedRaw->delta.y/-500.);
       }
     }
     //rot = sf::Vector2f(getMouse(window).x*3.,getMouse(window).y*3.);
     cameraPosition += rotateVector(getMovementDir()*delta,-rot.x);
     //cameraPosition += getMovementDir()*delta;
     cameraRotation = sf::Glsl::Mat3({
-       cos(rot.x), sin(rot.y)*sin(rot.x), -sin(rot.x)*cos(rot.y),
-       0.,cos(rot.y),sin(rot.y),
-       sin(rot.x),sin(rot.y)*-cos(rot.x),cos(rot.x)*cos(rot.y)
+      cos(rot.x),0.,-sin(rot.x),
+      sin(rot.x)*sin(rot.y),cos(rot.y),cos(rot.x)*sin(rot.y),
+      sin(rot.x)*cos(rot.y),-sin(rot.y),cos(rot.x)*cos(rot.y)
     });
 
     mainShader.setUniform("resolution",sf::Vector2f(600.,400.));
