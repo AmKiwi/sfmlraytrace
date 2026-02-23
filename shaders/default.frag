@@ -23,7 +23,7 @@ struct sphere
 
 sphere spheres[2] = sphere[](
   sphere(vec3(0.,0.,-2.),0.5,vec3(0.2,0.4,0.8),vec3(0.)),
-  sphere(vec3(-1.,-0.5,-4.),0.75,vec3(0.75,0.75,0.1),vec3(1.))
+  sphere(vec3(-1.,-0.5,-4.),0.75,vec3(1.),vec3(1.))
 );
 
 float hitSphere(sphere s, ray r)
@@ -40,40 +40,30 @@ float hitSphere(sphere s, ray r)
 
 vec3 rayColour(ray r)
 {
-  vec3 returnColor(0.);
-  vec3 energy(1.);
-  for (int i = 0; i < 4; i++) {
+  vec3 energy = vec3(1.,1.,1.);
+  ray tracingRay = r;
+  for (int i = 0; i < 8; i++) {
     float closestHit = 1./0.;
     int sphereHit = -1;
     for (int i = 0; i < spheres.length(); i++) {
-      float hit = hitSphere(spheres[i],r);
+      float hit = hitSphere(spheres[i],tracingRay);
       if (closestHit > hit && hit >= 0.) {
         closestHit = hit;
         sphereHit = i;
-    }
-  }
-
-  }
-  //return normalize(r.direction);
-  float closestHit = 1./0.;
-  int sphereHit = -1;
-  for (int i = 0; i < spheres.length(); i++) {
-      float hit = hitSphere(spheres[i],r);
-      if (closestHit > hit && hit >= 0.) {
-          closestHit = hit;
-          sphereHit = i;
       }
-  }
-  if (sphereHit != -1) {
-      //if (iter > 2) return vec3(0.);
+    }
+    if (sphereHit != -1) {
       vec3 hitpos = r.direction*closestHit+r.origin;
       vec3 normal = normalize(hitpos-spheres[sphereHit].pos);
-      //return 0.5*(normal+vec3(1.,1.,1.));
-      return spheres[sphereHit].colour*(dot(-normal,vec3(0.,-1.,0.))+1.)/2.;
-      //return rayColour(ray(hitpos,normalize(reflect(r.direction,normal))),iter+1);
+      tracingRay = ray(hitpos,reflect(tracingRay.direction,normal));
+      energy *=spheres[sphereHit].colour;
+      if (length(spheres[sphereHit].emission)>0.)
+        return energy*spheres[sphereHit].emission;
+    } else {
+      return energy*vec3(0.3,0.2,0.7);
+    }
   }
-  float a = 0.5*(normalize(r.direction).y+1.);
-  return (1.-a)*vec3(1.)+a*vec3(0.,0.,1.);
+  return vec3(0.);
 }
 
 const float focalLength = 1.;
