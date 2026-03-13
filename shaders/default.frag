@@ -20,10 +20,13 @@ struct sphere
   vec3 emission;
 };
 
+float ranNum(vec2 seed) {
+  return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
+}
 
-sphere spheres[2] = sphere[](
-  sphere(vec3(0.,0.,-2.),0.5,vec3(0.2,0.4,0.8),vec3(0.)),
-  sphere(vec3(-1.,-0.5,-4.),0.75,vec3(1.),vec3(1.))
+sphere spheres[1] = sphere[](
+  sphere(vec3(0.,0.,-2.),0.5,vec3(0.2,0.4,0.8),vec3(0.))
+//  sphere(vec3(-1.,-0.5,-4.),0.75,vec3(1.),vec3(1.))
 );
 
 float hitSphere(sphere s, ray r)
@@ -47,6 +50,13 @@ vec3 rayColour(ray r)
     int sphereHit = -1;
     for (int i = 0; i < spheres.length(); i++) {
       float hit = hitSphere(spheres[i],tracingRay);
+      if (hit >= 0.) {
+        closestHit = hit;
+        sphereHit = i;
+        vec3 hitpos = r.direction*closestHit+r.origin;
+        vec3 normal = normalize(hitpos-spheres[sphereHit].pos);
+        return vec3(ranNum(vec2(normal.x+normal.y,1.)));
+      }
       if (closestHit > hit && hit >= 0.) {
         closestHit = hit;
         sphereHit = i;
@@ -82,4 +92,5 @@ void main()
     ray viewRay = ray(cameraPos,normalize(viewport*cameraRotation));
     //gl_FragColor = vec4(uv,0.,1.);
     gl_FragColor=vec4(rayColour(viewRay),1.);
+    //gl_FragColor=vec4(vec3(ranNum(viewRay.direction.xy)),1.);
 }
